@@ -46,7 +46,7 @@ class FilmControllerTest {
 
     @Test
     void shouldNotCreateNewFilmWithLongDescription() {
-        film.setDescription(film.getDescription()+film.getDescription());
+        film.setDescription(film.getDescription() + film.getDescription());
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
 
