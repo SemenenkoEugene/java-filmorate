@@ -22,9 +22,9 @@ class FilmControllerTest {
     @BeforeEach
     public void before() {
         film = Film.builder()
-                .name("Превосходство")
-                .description("Выдающийся исследователь в области изучения искусственного разума доктор" +
-                             "Уилл Кастер работает над созданием компьютера")
+                .name("Transcendence")
+                .description("Dr. Will Custer, an outstanding researcher in the field of artificial intelligence studies," +
+                             " is working on the creation of a computer")
                 .releaseDate(LocalDate.of(2014, 4, 18))
                 .duration(119)
                 .id(1)
