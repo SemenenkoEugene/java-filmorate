@@ -14,29 +14,37 @@ import java.util.*;
 public class FilmController {
 
     private final List<Film> films = new ArrayList<>();
+    private int count;
 
-    @GetMapping("/films")
+    @GetMapping
     public Collection<Film> getAllFilms() {
         log.info("Получен запрос GET к эндпоинту: /films");
-        return new ArrayList<>(films);
+        return films;
     }
 
-    @PostMapping("/film")
+    @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос POST. Данные тела запроса: {}", film);
-        film.generatedIdFilm();
+        if (film.getId() == 0) {
+            film.setId(++count);
+        }
         films.add(film);
         return film;
     }
 
-    @PutMapping("/film/{id}")
+    @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос PUT. Данные тела запроса: {}", film);
-        if (!getAllFilms().contains(film)) {
-            throw new ValidationException("Фильма с идентификатором " + film.getId() + " не существует!");
+        for (Film listFilm : films) {
+            if (listFilm.getId() == film.getId()) {
+                listFilm.setName(film.getName());
+                listFilm.setDescription(film.getDescription());
+                listFilm.setDuration(film.getDuration());
+                listFilm.setReleaseDate(film.getReleaseDate());
+            } else {
+                throw new ValidationException("Фильма с идентификатором " + film.getId() + " не существует!");
+            }
         }
-        film.generatedIdFilm();
-        films.add(film);
         return film;
     }
 }

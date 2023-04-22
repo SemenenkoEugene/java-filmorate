@@ -30,8 +30,4 @@ public class Film {
 
     @Positive(message = "Продолжительность фильма не может быть отрицательной.")
     private long duration;
-
-    public void generatedIdFilm(){
-        ++id;
-    }
 }

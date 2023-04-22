@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class User {
 
+
     private int id;
 
     @Email(message = "Введенное значение не является адресом электронной почты.")
@@ -29,7 +30,5 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем.")
     private LocalDate birthday;
 
-    public void generatedIdUser(){
-        ++id;
-    }
+
 }
