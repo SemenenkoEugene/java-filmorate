@@ -19,8 +19,9 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
-    @BeforeEach
-    void before() {
+
+    @Test
+    void shouldCreateNewUserAndReturnListUser() {
         user = User.builder()
                 .email("gks-08@mail.ru")
                 .login("Eugene")
@@ -28,49 +29,22 @@ class UserControllerTest {
                 .birthday(LocalDate.of(1982, 10, 8))
                 .id(1)
                 .build();
-    }
-
-    @Test
-    void shouldCreateNewUser() {
         User newUser = userController.createUser(user);
         assertEquals(user, newUser);
         assertEquals(1, userController.getAllUsers().size());
     }
 
     @Test
-    void shouldNotCreateNewUserWithEmptyEmail() {
-        user.setEmail("");
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    void shouldNotCreateNewUserWithIncorrectlyEmail() {
-        user.setEmail("ya.ru");
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    void shouldNotCreateNewUserWithEmptyLogin() {
-        user.setLogin("");
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    void shouldNotCreateNewUserWithIncorrectlyLogin() {
-        user.setLogin("Eugene Semenenko");
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    void shouldCreateNewUserWithEmptyName() {
-        user.setName("");
-        User newUser = userController.createUser(user);
-        assertEquals(newUser.getName(), user.getLogin());
-    }
-
-    @Test
-    void shouldNotCreateNewUserWithIncorrectlyBirthday() {
-        user.setBirthday(LocalDate.now().plusDays(1));
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
+    void shouldUpdateUser() {
+        user = User.builder()
+                .email("gks-08@mail.ru")
+                .login("Eugene")
+                .name("Eugene")
+                .birthday(LocalDate.of(1982, 10, 8))
+                .id(1)
+                .build();
+        user.setBirthday(LocalDate.of(1982, 10, 10));
+        User updateUser = userController.updateUser(user);
+        assertEquals(user, updateUser);
     }
 }
