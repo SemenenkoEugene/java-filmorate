@@ -1,21 +1,30 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-class FilmControllerTest {
+class FilmorateApplicationTests {
 
-
+    private User user;
     private Film film;
     @Autowired
     private FilmController filmController;
+
+    @Autowired
+    private UserController userController;
 
     @Test
     void shouldCreateNewFilmAndReturnListFilm() {
@@ -47,4 +56,33 @@ class FilmControllerTest {
         assertEquals(film, updateFilm);
 
     }
+
+   @Test
+    void shouldCreateNewUserAndReturnListUser() {
+        user = User.builder()
+                .email("gks-08@mail.ru")
+                .login("Eugene")
+                .name("Eugene")
+                .birthday(LocalDate.of(1982, 10, 8))
+                .id(1)
+                .build();
+        User newUser = userController.createUser(user);
+        assertEquals(user, newUser);
+        assertEquals(1, userController.getAllUsers().size());
+    }
+
+    @Test
+    void shouldUpdateUser() {
+        user = User.builder()
+                .email("gks-08@mail.ru")
+                .login("Eugene")
+                .name("Eugene")
+                .birthday(LocalDate.of(1982, 10, 8))
+                .id(1)
+                .build();
+        user.setBirthday(LocalDate.of(1982, 10, 10));
+        User updateUser = userController.updateUser(user);
+        assertEquals(user, updateUser);
+    }
+
 }
