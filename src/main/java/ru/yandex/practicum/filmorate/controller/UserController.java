@@ -61,13 +61,13 @@ public class UserController {
         if (!user.getEmail().contains("@")) {
             throw new ValidationException("Электронная почта должна содержать символ '@'.");
         }
-        if (user.getEmail().isEmpty()){
+        if (user.getEmail().isEmpty()) {
             throw new ValidationException("Электронная почта не может быть пустой.");
         }
         if (user.getLogin().isEmpty()) {
             throw new ValidationException("Логин не может быть пустым.");
         }
-        if (user.getLogin().contains(" ")){
+        if (user.getLogin().contains(" ")) {
             throw new ValidationException("Логин не должен содержать пробелы.");
         }
         if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
