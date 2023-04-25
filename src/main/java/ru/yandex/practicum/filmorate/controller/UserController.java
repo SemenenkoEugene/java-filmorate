@@ -22,62 +22,56 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        log.info("Получен запрос GET к эндпоинту: /users");
+        log.debug("Получен запрос GET к эндпоинту: /users");
         return new ArrayList<>(users);
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
-        log.info("Получен запрос POST. Данные тела запроса: {}", user);
-        if (validate(user)) {
-            if (user.getName() == null || user.getName().isEmpty()) {
-                user.setName(user.getLogin());
-                log.info("Поле name не задано. Установлено значение {} из поля login", user.getLogin());
-            }
-            if (user.getId() == 0) {
-                user.setId(++count);
-            }
-            users.add(user);
-        } else {
-            throw new ValidationException("Пользователь не прошел валидацию");
+        validate(user);
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+            log.info("Поле name не задано. Установлено значение {} из поля login пользователя c ID={}", user.getLogin(), user.getId());
         }
+        user.setId(++count);
+        users.add(user);
+        log.debug("Обработан запрос POST к эндпоинту: '/users' на добавление пользователя с ID={}", user.getId());
         return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        log.info("Получен запрос PUT. Данные тела запроса: {}", user);
-        if (validate(user)) {
-            for (User userList : users) {
-                if (userList.getId() == user.getId()) {
-                    userList.setEmail(user.getEmail());
-                    userList.setLogin(user.getLogin());
-                    userList.setName(user.getName());
-                    userList.setBirthday(user.getBirthday());
-                } else {
-                    throw new ValidationException("Пользователя с идентификатором " + user.getId() + " не существует!");
-                }
+        log.debug("Получен запрос PUT к эндпоинту: '/users' на обновление пользователя с ID={}", user.getId());
+        validate(user);
+        for (User userList : users) {
+            if (userList.getId() == user.getId()) {
+                userList.setEmail(user.getEmail());
+                userList.setLogin(user.getLogin());
+                userList.setName(user.getName());
+                userList.setBirthday(user.getBirthday());
+            } else {
+                throw new ValidationException("Пользователя с идентификатором ID=" + user.getId() + " не существует!");
             }
-        } else {
-            throw new ValidationException("Пользователь не прошел валидацию");
         }
+        log.debug("Обработан запрос PUT к эндпоинту: '/users' на обновление пользователя с ID={}", user.getId());
         return user;
     }
 
-    private boolean validate(User user) {
-        boolean isValid = true;
+    private void validate(User user) {
         if (!user.getEmail().contains("@")) {
-            log.info("Некорректный e-mail пользователя: {}", user.getEmail());
-            return false;
+            throw new ValidationException("Электронная почта должна содержать символ '@'.");
         }
-        if (user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            log.info("Некорректный логин пользователя: {}", user.getLogin());
-            return false;
+        if (user.getEmail().isEmpty()){
+            throw new ValidationException("Электронная почта не может быть пустой.");
+        }
+        if (user.getLogin().isEmpty()) {
+            throw new ValidationException("Логин не может быть пустым.");
+        }
+        if (user.getLogin().contains(" ")){
+            throw new ValidationException("Логин не должен содержать пробелы.");
         }
         if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
-            log.info("Некорректная дата рождения пользователя: {}", user.getBirthday());
-            return false;
+            throw new ValidationException("Дата рождения не может быть в будущем.");
         }
-        return isValid;
     }
 }
