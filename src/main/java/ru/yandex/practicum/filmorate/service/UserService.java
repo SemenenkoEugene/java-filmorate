@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundUserException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -19,18 +21,33 @@ public class UserService {
     }
 
     public User getUserById(final Integer id) {
+        if (userStorage.getUserById(id) == null) {
+            throw new NotFoundUserException("Пользователь с Id=" + id + " не найден!");
+        }
         return userStorage.getUserById(id);
     }
 
     public User createUser(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
         return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
+        if (userStorage.getUserById(user.getId()) == null) {
+            throw new NotFoundUserException("Пользователь с Id=" + user.getId() + " не найден!");
+        }
         return userStorage.updateUser(user);
     }
 
     public User deleteUser(final Integer id) {
+        if (id == null) {
+            throw new ValidationException("Пустой id!");
+        }
+        if (userStorage.getUserById(id) == null) {
+            throw new NotFoundUserException("Пользователь с ID=" + id + " не найден!");
+        }
         return userStorage.deleteUser(id);
     }
 
@@ -87,14 +104,10 @@ public class UserService {
     public Collection<User> getCommonFriends(final Integer firstUserId, final Integer secondUserId) {
         User firstUser = userStorage.getUserById(firstUserId);
         User secondUser = userStorage.getUserById(secondUserId);
-        if (firstUser == null || secondUser == null) {
-            return new ArrayList<>();
-        }
         Set<Integer> commonFriends = new HashSet<>(firstUser.getFriends());
         commonFriends.retainAll(secondUser.getFriends());
         return commonFriends.stream()
                 .map(userStorage::getUserById)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 }
