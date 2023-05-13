@@ -21,10 +21,11 @@ public class UserService {
     }
 
     public User getUserById(final Integer id) {
-        if (userStorage.getUserById(id) == null) {
+        User userById = userStorage.getUserById(id);
+        if (userById == null) {
             throw new NotFoundUserException("Пользователь с Id=" + id + " не найден!");
         }
-        return userStorage.getUserById(id);
+        return userById;
     }
 
     public User createUser(User user) {
@@ -75,8 +76,8 @@ public class UserService {
      * @param friendId идентификатор друга
      */
     public void deleteFriend(final Integer userId, final Integer friendId) {
-        User userById = userStorage.getUserById(userId);
-        User friendById = userStorage.getUserById(friendId);
+        User userById = getUserById(userId);
+        User friendById = getUserById(friendId);
         userById.getFriends().remove(friendId);
         friendById.getFriends().remove(userId);
     }
@@ -88,7 +89,7 @@ public class UserService {
      * @return список друзей
      */
     public List<User> getFriends(final Integer id) {
-        Set<Integer> friends = userStorage.getUserById(id).getFriends();
+        Set<Integer> friends = getUserById(id).getFriends();
         return friends.stream()
                 .map(userStorage::getUserById)
                 .collect(Collectors.toList());
@@ -102,8 +103,8 @@ public class UserService {
      * @return список общих друзей
      */
     public Collection<User> getCommonFriends(final Integer firstUserId, final Integer secondUserId) {
-        User firstUser = userStorage.getUserById(firstUserId);
-        User secondUser = userStorage.getUserById(secondUserId);
+        User firstUser = getUserById(firstUserId);
+        User secondUser = getUserById(secondUserId);
         Set<Integer> commonFriends = new HashSet<>(firstUser.getFriends());
         commonFriends.retainAll(secondUser.getFriends());
         return commonFriends.stream()
