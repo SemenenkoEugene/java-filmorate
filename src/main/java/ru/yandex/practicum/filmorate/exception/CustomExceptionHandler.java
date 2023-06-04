@@ -59,7 +59,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseError internalServerErrorHandle(InternalServerErrorException e){
+    public ResponseError internalServerErrorHandle(InternalServerErrorException e) {
         log.error(e.getMessage());
         return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
