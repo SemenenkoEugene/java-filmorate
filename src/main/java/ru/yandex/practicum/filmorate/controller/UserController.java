@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -13,7 +13,7 @@ import java.util.*;
 @RestController
 @Slf4j
 @RequestMapping("/users")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
@@ -24,12 +24,14 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @ResponseBody
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         log.debug("Запрос POST к эндпоинту: '/users' на добавление пользователя с ID={}", user.getId());
         return userService.createUser(user);
     }
 
+    @ResponseBody
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) throws ValidationException {
         log.debug("Запрос PUT к эндпоинту: '/users' на обновление пользователя с ID={}", user.getId());

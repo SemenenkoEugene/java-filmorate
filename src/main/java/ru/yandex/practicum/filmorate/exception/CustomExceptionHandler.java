@@ -36,6 +36,34 @@ public class CustomExceptionHandler {
         return new ResponseError(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError notFoundGenreHandle(GenreNotFoundException e) {
+        log.error(e.getMessage());
+        return new ResponseError(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError notFoundMpaHandle(MpaNotFoundException e) {
+        log.error(e.getMessage());
+        return new ResponseError(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseError notFoundLikeHandle(NotFoundLikeException e) {
+        log.error(e.getMessage());
+        return new ResponseError(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseError internalServerErrorHandle(InternalServerErrorException e){
+        log.error(e.getMessage());
+        return new ResponseError(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @Getter
     @RequiredArgsConstructor
     private static class ResponseError {

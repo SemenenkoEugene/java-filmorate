@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class Film {
@@ -32,14 +32,15 @@ public class Film {
     @Positive(message = "Продолжительность фильма не может быть отрицательной.")
     private long duration;
 
-    private Set<Integer> likes;
+    @NotNull(message = "Поле рейтинг фильма пустое.")
+    private Mpa mpa;
+    private Set<Genre> genres = new HashSet<>();
 
-    public Film(Integer id, String name, String description, LocalDate releaseDate, long duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.likes = new HashSet<>();
+    private Set<Integer> likes = new HashSet<>();
+
+    public void setGenres(Set<Genre> genres) {
+        this.genres = genres.stream()
+                .sorted(Comparator.comparingInt(Genre::getId))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

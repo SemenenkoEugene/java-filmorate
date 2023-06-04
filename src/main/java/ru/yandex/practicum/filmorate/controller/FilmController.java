@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,7 +12,7 @@ import java.util.*;
 @RestController
 @Slf4j
 @RequestMapping("/films")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
@@ -23,16 +23,20 @@ public class FilmController {
         return filmService.getAllFilms();
     }
 
+    @ResponseBody
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
         log.debug("Запрос POST к эндпоинту: '/films' на добавление фильма с ID={}", film.getId());
-        return filmService.createFilm(film);
+        film = filmService.createFilm(film);
+        return film;
     }
 
+    @ResponseBody
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
         log.debug("Запрос PUT к эндпоинту: '/films' на обновление фильма с ID={}", film.getId());
-        return filmService.updateFilm(film);
+        film = filmService.updateFilm(film);
+        return film;
     }
 
     @GetMapping("/{id}")
