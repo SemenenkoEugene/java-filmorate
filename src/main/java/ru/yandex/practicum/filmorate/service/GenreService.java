@@ -31,7 +31,7 @@ public class GenreService {
         return new HashSet<>(genreStorage.getFilmGenre(filmId));
     }
 
-    public void updateFilmGenre(Film film){
+    public void updateFilmGenre(Film film) {
         genreStorage.updateGenres(film);
     }
 }
