@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
+
 @Primary
 @Component
 @RequiredArgsConstructor
