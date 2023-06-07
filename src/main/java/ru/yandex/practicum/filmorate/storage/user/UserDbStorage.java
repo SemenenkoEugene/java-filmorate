@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundUserException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -26,9 +25,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User getUserById(Integer userId) {
-        if (userId == null) {
-            throw new ValidationException("Передан пустой аргумент!");
-        }
         String sql = "SELECT * FROM USERS WHERE ID = ?";
         User user;
         try {
@@ -60,9 +56,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (user.getId() == null) {
-            throw new ValidationException("Передан пустой аргумент!");
-        }
         if (getUserById(user.getId()) != null) {
             String sql = "UPDATE USERS SET EMAIL = ?, LOGIN = ?, NAME = ?, BIRTHDAY = ? WHERE ID = ?";
             jdbcTemplate.update(sql,
@@ -79,9 +72,6 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User deleteUser(Integer userId) {
-        if (userId == null) {
-            throw new ValidationException("Передан пустой аргумент!");
-        }
         User user = getUserById(userId);
         String sql = "DELETE FROM USERS WHERE ID = ?";
         if (jdbcTemplate.update(sql, userId) == 0) {

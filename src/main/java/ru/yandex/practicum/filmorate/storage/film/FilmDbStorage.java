@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundFilmException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmColumn;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
@@ -15,7 +14,6 @@ import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Primary
 @Component("filmDbStorage")
@@ -48,9 +46,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (film == null) {
-            throw new ValidationException("Передан пустой аргумент!");
-        }
         String sql = "UPDATE FILMS SET NAME=?, DESCRIPTION=?, RELEASE_DATE=?, DURATION=?, RATING_ID=? WHERE ID=?";
         int updateCount = jdbcTemplate.update(sql,
                 film.getName(),
@@ -70,9 +65,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film deleteFilm(Integer filmId) {
-        if (filmId == null) {
-            throw new ValidationException("Передан пустой аргумент!");
-        }
         Film film = getFilmById(filmId);
         String sql = "DELETE FROM FILMS WHERE ID=?";
         if (jdbcTemplate.update(sql, filmId) == 0) {
@@ -83,18 +75,24 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        String sql = "SELECT * FROM FILMS";
-        List<FilmColumn> filmColumns = jdbcTemplate.query(sql, new FilmMapper());
-        return filmColumns.stream()
-                .map(this::fromColumnsToDao)
-                .collect(Collectors.toList());
+        String sql = "SELECT F.*, G.*, M.*" +
+                     "FROM FILMS F LEFT JOIN FILM_GENRES GF ON GF.FILM_ID = F.ID " +
+                     "LEFT JOIN GENRES G ON G.ID = GF.GENRE_ID " +
+                     "LEFT JOIN RATINGS_MPA M ON F.RATING_ID = M.ID";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Film(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getDate("release_date").toLocalDate(),
+                rs.getInt("duration"),
+                mpaStorage.getMpaById(rs.getInt("rating_id")),
+                new HashSet<>(genreStorage.getFilmGenre(rs.getInt("id"))),
+                new HashSet<>(likeStorage.getLikes(rs.getInt("id")))
+        )));
     }
 
     @Override
     public Film getFilmById(Integer filmId) {
-        if (filmId == null) {
-            throw new ValidationException("Передан пустой аргумент!");
-        }
         String sqlQuery = "SELECT * FROM FILMS WHERE ID = ?";
         try {
             FilmColumn filmColumn = jdbcTemplate.queryForObject(sqlQuery, new FilmMapper(), filmId);
