@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundFilmException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmColumn;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Primary
 @Component("filmDbStorage")
@@ -76,27 +76,17 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        String sql = "SELECT F.*, G.*, M.*" +
-                     "FROM FILMS F LEFT JOIN FILM_GENRES GF ON GF.FILM_ID = F.ID " +
-                     "LEFT JOIN GENRES G ON G.ID = GF.GENRE_ID " +
-                     "LEFT JOIN RATINGS_MPA M ON F.RATING_ID = M.ID";
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Film(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getDate("release_date").toLocalDate(),
-                rs.getInt("duration"),
-                new Mpa(rs.getInt("rating_id"), rs.getString("name")),
-                new HashSet<>(genreStorage.getFilmGenre(rs.getInt("id"))),
-                new HashSet<>(likeStorage.getLikes(rs.getInt("id")))
-        )));
+        String sql = "SELECT * FROM  FILMS";
+        List<FilmColumn> filmColumns = jdbcTemplate.query(sql, new FilmColumnMapper());
+
+        return filmColumns.stream().map(this::fromColumnsToDao).collect(Collectors.toList());
     }
 
     @Override
     public Film getFilmById(Integer filmId) {
         String sqlQuery = "SELECT * FROM FILMS WHERE ID = ?";
         try {
-            FilmColumn filmColumn = jdbcTemplate.queryForObject(sqlQuery, new FilmMapper(), filmId);
+            FilmColumn filmColumn = jdbcTemplate.queryForObject(sqlQuery, new FilmColumnMapper(), filmId);
             return fromColumnsToDao(Objects.requireNonNull(filmColumn));
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundFilmException("Фильм с Id=" + filmId + " не найден!");

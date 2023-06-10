@@ -27,11 +27,12 @@ public class MpaStorageImpl implements MpaStorage {
     }
 
     public Mpa getMpaById(Integer mpaId) {
+        String sql = "SELECT * FROM RATINGS_MPA WHERE ID = ?";
         if (mpaId == null) {
             throw new ValidationException("Передан пустой аргумент!");
         }
         Mpa mpa;
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT * FROM RATINGS_MPA WHERE ID = ?", mpaId);
+        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sql, mpaId);
         if (mpaRows.first()) {
             mpa = new Mpa(
                     mpaRows.getInt("id"),

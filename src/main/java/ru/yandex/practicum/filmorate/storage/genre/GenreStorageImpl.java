@@ -57,7 +57,6 @@ public class GenreStorageImpl implements GenreStorage {
                     new BatchPreparedStatementSetter() {
                         @Override
                         public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            ps.setLong(1, film.getId());
                             ps.setInt(1, film.getId());
                             ps.setInt(2, genres.get(i).getId());
                         }
