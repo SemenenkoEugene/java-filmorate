@@ -37,8 +37,6 @@
    - **birthday** - дата рождения;
    - **friends** - список друзей;
 
-
-
 [Схема БД](https://github.com/SemenenkoEugene/java-filmorate/blob/main/2023-05-28_18-34-28.png)
 
 Реализация приложения проверялась с помощью [postman-тестов](https://github.com/SemenenkoEugene/java-filmorate/blob/main/filmorate-postman-test.json)
